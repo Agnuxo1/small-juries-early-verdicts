@@ -71,7 +71,7 @@ The threshold τ is picked on development runs only; the curve above is the held
 trace-feature curve across almost the whole range, and killing every run at step 10 is the worst option. A step cap tuned on
 development runs (20 steps) is a strong baseline (+25%); the jury matches it while deciding ten steps earlier, and the two
 combine to +36%. The gain survives charging one agent step per judgement (+23%), any threshold within ±0.10 of the chosen
-one (+20% to +29%) and re-weighting to the dataset's base rate (+35%) — see `results/robustness.json`.
+one (+18% to +29%) and re-weighting to the dataset's base rate (+35%) — see `results/robustness.json`.
 
 <img src="figures/fig3_budget_gain.png" width="100%" alt="Budget gain vs threshold">
 

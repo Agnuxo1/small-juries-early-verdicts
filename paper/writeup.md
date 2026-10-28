@@ -122,12 +122,12 @@ pre-registration. The rubric does not discriminate better than asking the same m
 +0.022 [−0.021, +0.065]); H2 holds only through its stacking leg, which the holistic stack also passes (+0.077
 [+0.011, +0.142]). The rubric's value is interpretability and calibration (Sections 4.2, 4.5), not extra ranking power.
 
-*Run or issue?* Some issues are harder than others, so part of any early signal can come from the issue text alone.
-An ablation in which E4B sees the same issue but no agent step reaches only AUROC 0.533 [0.482, 0.582] (holistic) and 0.535 (jury); reading the first ten steps adds **+0.142** [+0.063, +0.218] (p = 0.001). Among the 52 issues with both a resolved and a failed judged run, the jury ranks the resolved run higher 54% of the time [40, 67], too few pairs to conclude. The early signal comes from what the agent does, not from issue difficulty alone.
+*Run or issue?* Part of any early signal could come from the issue text alone.
+An ablation in which E4B sees the same issue but no agent step reaches only AUROC 0.533 [0.482, 0.582] (holistic) and 0.535 (jury); reading the first ten steps adds **+0.142** [+0.063, +0.218] (p < 0.001). Among the 52 issues with both a resolved and a failed judged run, the jury ranks the resolved run higher 54% of the time [40, 67], too few pairs to conclude. The early signal comes from what the agent does, not issue difficulty alone.
 
 *Why absolute prefixes matter.* With fractional prefixes, trace features reach AUROC 0.720 at 66% of the run, because the
 number of steps in "66% of the run" encodes the total length, which is strongly associated with failure; there the jury adds
-nothing over trace features (−0.015 [−0.062, +0.032]). A live monitor never knows the final length; absolute prefixes are
+nothing over trace features (−0.015 [−0.062, +0.030]). A live monitor never knows the final length; absolute prefixes are
 the honest setting, and the one where the LLM judge helps.
 
 ### 4.2 Calibration
@@ -160,19 +160,19 @@ model costs a fraction of a GPU-second per judgement.
 |---|---|
 | abort every run at step 10 | −17% [−35, +3] |
 | trace-feature abort at step 10 | +10% [−3, +24] |
-| best step cap on dev (20 steps) | +25% [+11, +38] |
+| best step cap on dev (20 steps) | +25% [+12, +38] |
 | **Gemma 4 E4B jury abort at step 10** | **+29% [+14, +45]**, Holm p ≤ 0.004 |
 | E4B jury at step 10 + cap (30 steps) | **+36% [+19, +54]** |
-| Gemma 4 E2B jury abort at step 10 | +17% [+0.3, +36] |
+| Gemma 4 E2B jury abort at step 10 | +17% [+0.2, +34] |
 
-The jury policy beats the trace-feature policy by +19 points [+7, +33] (unadjusted p = 0.002). At step 10 it aborts 252 of
+CIs from `results/contrasts.csv`; combined row from `results/robustness.json`. The jury policy beats the trace-feature policy by +19 points [+7, +33] (unadjusted p = 0.002). At step 10 it aborts 252 of
 the 429 judged runs: they would have succeeded 18% of the time, against 38% for the runs it keeps. It gives up 45 of 166
 eventual successes but saves 6,251 of 14,328 agent steps (44%), the trade a fixed budget rewards. A step cap is a strong
 baseline in this data, because runs still going after 20 steps rarely succeed: the jury at step 10 matches the best cap
 (+4 points [−9, +18]) while deciding ten steps earlier, and the two compose (jury + cap minus jury alone: +7 points
 [+1.5, +13]). At step 20 the jury adds nothing over the cap (+1.7 [−3.7, +7.9]): **its value is in deciding early**.
 
-*Robustness.* Charging one agent step per judgement: +23% [+8, +39]. Thresholds within ±0.10 of the chosen τ: +20% to +29%.
+*Robustness.* Charging one agent step per judgement: +23% [+8, +38]. Thresholds within ±0.10 of the chosen τ: +18% to +29%.
 Re-weighting the test runs to the dataset's 16.7% success rate: jury +35%, cap +29%, combined +42%. The simulation measures
 resolved issues per step under an open stream of issues; with a fixed issue list, aborted issues need a retry policy.
 
@@ -191,8 +191,8 @@ may help, and the calibrated 4B jury is already close.
 
 ## 5. Discussion
 
-**How to use it.** In a budgeted harness (e.g. 12 h on 4×L4 with Gemma 4 as the agent), the jury shares the server and
-weights: one extra prompt at step 10 per attempt, plus a step cap; τ and the cap are tuned on development runs. The dimension
+**How to use it.** In a budgeted harness (e.g. 12 h on 4×L4 with Gemma 4 as the agent), the jury reuses the served
+weights: one extra prompt at step 10 per attempt, plus a step cap, with τ and the cap tuned on development runs. The dimension
 scores give a readable reason ("stuck in a loop", "has not found the code") for inspecting runs or filtering SFT/RL data.
 
 **What generalizes.** The method needs only a log and a rubric: no environment, tests or final patch. It applies to any

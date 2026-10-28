@@ -70,7 +70,7 @@ matched except four wording/rounding issues (fixed). Major points and our respon
 - *Is the signal the run or the issue?* → within-issue pairs (52 issues with both outcomes): E4B jury ranks the resolved run
   higher 0.54 [0.40, 0.67] — inconclusive; an issue-only ablation (E4B sees the issue, no agent step) was run (E1-issue).
 - *Calibration overclaimed* → ECE CI [0.019, 0.070], slope 1.12, noise floor 0.032 (median), re-weighted ECE 0.072 reported.
-- *H4 robustness* → judgement overhead +22.8% [+7.8, +38.5]; τ ± 0.10: +20% to +29%; re-weighted to 16.7%: +34.7%.
+- *H4 robustness* → judgement overhead +22.8% [+7.8, +38.5]; τ ± 0.10: +18% to +29%; re-weighted to 16.7%: +34.7%.
 - *Validation overclaimed* → one rating per item; paired AUROC reference − calibrated jury +0.06 [−0.02, +0.14].
 - Prior art added: Speculative Rejection (arXiv:2410.20290), process reward models (arXiv:2305.20050).
 

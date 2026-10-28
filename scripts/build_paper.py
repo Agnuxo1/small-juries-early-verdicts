@@ -35,14 +35,23 @@ def pdf_md(s):
     return re.sub(r'^### .*\n', '', s, count=1, flags=re.M)             # subtitle moved into the title block
 
 
+KAGGLE_ALT = {  # shorter alt text: the Kaggle Writeup counts toward the 3,000-word limit
+    'fig2_auroc_forest.png': 'AUROC from the first k agent steps (test split, 95% repository-cluster CIs). Hollow: holistic; filled: jury.',
+    'fig4_calibration.png': 'Reliability, Gemma 4 E4B at k = 10: raw holistic probabilities vs. the dev-calibrated jury. Marker area ∝ bin size.',
+    'fig7_cost_quality.png': 'AUROC vs. GPU time per judgement (k = 10, batched vLLM, one RTX 3090). Hollow: holistic; filled: jury.',
+    'fig3_budget_gain.png': 'Resolved tasks per step vs. never aborting, by abort threshold (test split). Dots: threshold chosen on development data.',
+    'fig5_judge_validation.png': 'Left: quadratic-weighted kappa (95% CI), Gemma jury vs. blind reference on 80 test prompts. Right: mean rating per dimension.',
+}
+
+
 def kaggle_md(s):
-    s = re.sub(r'!\[(.*?)\]\(\.\./figures/(.*?)\)', lambda m: f'![{CAPTIONS.get(m.group(2), (m.group(1),))[0]}]({RAW}{m.group(2)})', s)
+    s = re.sub(r'!\[(.*?)\]\(\.\./figures/(.*?)\)', lambda m: f'![{KAGGLE_ALT.get(m.group(2), m.group(1))}]({RAW}{m.group(2)})', s)
     s = s.replace('(`results/metrics_preregistered.csv`.) ', '')
     return re.sub(r'^# .*\n+(### .*\n+)?', '', s, count=1)       # title/subtitle go in the Kaggle form fields
 
 
 (ROOT / 'paper' / '_pdf_src.md').write_text(pdf_md(SRC), encoding='utf8')
-(ROOT / 'paper' / 'kaggle_writeup.md').write_text(kaggle_md(SRC), encoding='utf8')
+(ROOT / 'paper' / 'kaggle_writeup.md').write_text(kaggle_md(SRC), encoding='utf8', newline='\n')
 subprocess.run(['pandoc', '_pdf_src.md', '-o', 'small-juries-early-verdicts.pdf', '--pdf-engine=xelatex',
                 '--resource-path=.:..', '-V', 'mainfont=Cambria', '-V', 'monofont=Consolas', '-V', 'geometry:margin=2.1cm',
                 '-V', 'fontsize=10pt', '-V', 'colorlinks=true', '-V', 'linkcolor=blue', '-V', 'urlcolor=blue'],
