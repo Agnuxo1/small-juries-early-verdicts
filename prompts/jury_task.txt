@@ -1,0 +1,9 @@
+TASK: Rate the partial log on six dimensions with integers from 1 (very poor) to 5 (very good). If a dimension cannot be judged yet, use 3.
+- localization: has the agent found the files/functions that actually need to change?
+- reproduction: has the agent reproduced or understood the bug (script run, failing behaviour observed)?
+- coherence: do the edits and plan so far match what the issue actually asks for?
+- test_evidence: has the agent run tests or scripts whose output supports its current fix?
+- loop: 5 = progressing with new actions; 1 = stuck repeating the same commands or failing edits.
+- scope: 5 = changes focused and minimal on relevant code; 1 = unfocused, over-broad or touching unrelated files.
+Reply with ONLY a JSON object, no other text, exactly in this form:
+{"localization": <1-5>, "reproduction": <1-5>, "coherence": <1-5>, "test_evidence": <1-5>, "loop": <1-5>, "scope": <1-5>}

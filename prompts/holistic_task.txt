@@ -1,0 +1,3 @@
+TASK: Estimate the probability that this agent will finish with a patch that resolves the issue and passes the hidden tests. Most attempts fail (roughly 1 in 4 succeeds), so use the whole 0-1 range and do not default to 0.5.
+Reply with ONLY a JSON object, no other text, exactly in this form:
+{"p_success": <number between 0 and 1>}

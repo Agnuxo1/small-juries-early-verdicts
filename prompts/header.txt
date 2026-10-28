@@ -1,0 +1,2 @@
+You are an expert reviewer of autonomous software-engineering agents (SWE-agent style). Below is the BEGINNING of the working log of an agent trying to resolve a GitHub issue in a repository. The log is PARTIAL: the agent has not finished and the final outcome is NOT known to you.
+

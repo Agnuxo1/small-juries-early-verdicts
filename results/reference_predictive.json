@@ -1,0 +1,15 @@
+{
+ "n": 80,
+ "n_pos": 23,
+ "auroc_ref_localization": 0.7170099160945843,
+ "auroc_ref_reproduction": 0.6819221967963387,
+ "auroc_ref_coherence": 0.763157894736842,
+ "auroc_ref_test_evidence": 0.7284515636918383,
+ "auroc_ref_loop": 0.7944317315026697,
+ "auroc_ref_scope": 0.7124332570556827,
+ "auroc_ref_mean": 0.8310450038138826,
+ "auroc_ref_mean_ci": [
+  0.7275817524175094,
+  0.919707240924436
+ ]
+}
