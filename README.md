@@ -2,6 +2,11 @@
 
 # Small Juries, Early Verdicts
 
+> **Official submission completed — 28 October 2026.** Kaggle displays
+> **Submitted!** for [this Paper Track write-up](https://www.kaggle.com/competitions/gemma-4-developer-agent-paper/writeups/small-juries-early-verdicts),
+> with the full article, figures and links to this code and the PDF. This is an
+> official submission receipt, not a judging result. [Delivery record](paper/DELIVERY_20261028.md).
+
 **A local Gemma 4 jury reads the first 10 steps of a coding-agent run, predicts whether it will fail,
 and lets the same compute budget resolve 29% more GitHub issues.**
 
