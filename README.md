@@ -95,6 +95,38 @@ at ρ = 0.73. Small judges are lenient, most on "coherence", which is where agre
 
 <img src="figures/fig7_cost_quality.png" width="60%" alt="Quality versus cost">
 
+## Deployable policy: development-fitted calibration and cost-aware abort
+
+The project now includes a **JSON-exportable, development-fitted policy** in
+[`src/deployment_policy.py`](src/deployment_policy.py). It selects the abort
+threshold from development runs only, charges **one agent step per judgement**,
+and continues when no judgement exists. Its holistic-score isotonic calibrator
+can be used without scikit-learn at inference; it is separate from jury scores.
+
+Three reproducible exploratory interventions on the archived real agent runs:
+
+| Intervention | Held-out result | Decision |
+|---|---|---|
+| Dev-fitted holistic calibration | Brier **0.22564 → 0.17681**; AUROC 0.65515 → 0.65479 | Export calibration; no discrimination-gain claim |
+| Dev-selected abort policy, including judgement cost | **+22.35%** resolved tasks per step vs never aborting; repository-bootstrap 95% CI **[+8.91%, +38.02%]** | Export threshold 0.75; missing judgements continue |
+| Fixed 50/50 jury + trace-feature hybrid | AUROC 0.63348 vs jury 0.67678 and features 0.57512 | Keep both comparisons; retain jury alone |
+
+These are **postprocessing and historical replay**, not new live agent runs or
+an official competition score. Calibration uses 429 judged test runs from 351
+repositories; policy replay includes all 600 test runs. Development and test
+repositories do not overlap. The positive replay result does not establish
+real-time savings under a different agent or model.
+
+```sh
+python -m src.deployment_policy
+python scripts/reproduce_postprocessing.py
+```
+
+Use `should_abort(jury_probability, policy)` at step 10, or
+`calibrated_holistic(raw_holistic_probability, policy)` for calibration.
+[Exported policy](results/deployment_policy.json) ·
+[Results, paired intervals and input hashes](results/postprocessing_experiments.json)
+
 ## How it works
 
 ```
