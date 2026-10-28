@@ -78,3 +78,9 @@ matched except four wording/rounding issues (fixed). Major points and our respon
 
 **C1 — open-model control** (job `0f4417cc04eb4aed`). Qwen3-4B-Instruct-2507 with byte-identical prompts on test and dev,
 k = 10, k = 20 and frac66. [[QWEN_LOG]]
+
+## 28 October — exploratory postprocessing applied as reusable code
+G1: development-fitted isotonic calibration of raw holistic scores reduces held-out Brier .225635→.176814, AUROC .655152→.654785. Export knots as JSON; no claim of discrimination gain.
+G2: development-selected failure threshold .75, fixed1step per judged run; all600test runs, +22.3538% tasks/step [8.9081%,38.0165%] vs never abort. Missing judgement continues. This is archived replay, not new live savings.
+G3: equal jury/features hybrid AUROC .633478: below jury .676783, above features .575118; both comparisons retained. Do not replace jury with this hybrid.
+Reproduce scripts/reproduce_postprocessing.py. Development-only deployable export: python -m src.deployment_policy. Two tests verify portable calibrator equality, threshold boundary, missing/invalid scores. No additional model call, API expense or official submission occurred in this change.

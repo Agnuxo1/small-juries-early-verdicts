@@ -1,0 +1,73 @@
+{
+  "kind": "new_exploratory_postprocessing_and_replay",
+  "n_judged_test": 429,
+  "test_repositories": 351,
+  "dev_test_repository_overlap": 0,
+  "metrics": {
+    "holistic": {
+      "auroc": 0.6551515322217214,
+      "brier": 0.2256354312354312
+    },
+    "isotonic": {
+      "auroc": 0.6547853762956287,
+      "brier": 0.1768136362527925
+    },
+    "jury": {
+      "auroc": 0.6767828977016674,
+      "brier": 0.1777313601706507
+    },
+    "features": {
+      "auroc": 0.5751182965299684,
+      "brier": 0.19790428369432486
+    },
+    "hybrid_50_50": {
+      "auroc": 0.6334779179810726,
+      "brier": 0.18273985045749383
+    }
+  },
+  "contrasts": {
+    "isotonic-vs-holistic": {
+      "delta_auroc": -0.00036615592609268166,
+      "paired_repository_ci95": [
+        -0.005359082584862629,
+        0.0048201204978812655
+      ]
+    },
+    "hybrid_50_50-vs-jury": {
+      "delta_auroc": -0.04330497972059488,
+      "paired_repository_ci95": [
+        -0.08433815845645716,
+        -0.0006701577601260995
+      ]
+    },
+    "hybrid_50_50-vs-features": {
+      "delta_auroc": 0.05835962145110418,
+      "paired_repository_ci95": [
+        0.029070588812736917,
+        0.08795136198134704
+      ]
+    }
+  },
+  "G2_replay": {
+    "n_all_test": 600,
+    "tau_jury_dev": 0.75,
+    "tau_features_dev": 0.77,
+    "never_abort_efficiency": 0.0115857063093244,
+    "jury_efficiency": 0.01417555001134044,
+    "features_efficiency": 0.012168711972775085,
+    "overhead_steps_per_judged_run": 1,
+    "relative_gain_jury_vs_never_abort": 0.22353783471376998,
+    "relative_gain_features_vs_never_abort": 0.05032111533687589,
+    "relative_gain_jury_ci95": [
+      0.08908123804295454,
+      0.380164596827176
+    ]
+  },
+  "source_hashes": {
+    "dev_predictions_all_models.csv": "dd5eae62bc1977b6f7ec92661aa121fbb8098a7cab559da92792db223f15f7ff",
+    "dev_runs.csv": "259b5f557644e9a651d2ab5dd43f8b943e57bf747d233304d23488924266bc16",
+    "test_predictions.csv": "591868af8040b0e7e12b290b5cf54f8546f59d3c4bb8d06bd8842bae1ccfa0a2",
+    "test_runs.csv": "bad35a13a3b103b3ad17092e61ba5189d88e20735686bd06d15a07803e99d20a"
+  },
+  "generated_utc": "2026-10-28T09:24:20.364503+00:00"
+}
