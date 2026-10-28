@@ -42,7 +42,7 @@ to the final patch — just the log so far.
 | vs. trace-feature policy | **+19 points** [+7, +33] | same policy, no LLM |
 | **Jury at step 10 + step cap** | **+36%** [+19, +54] | composes with the best cap tuned on dev (cap alone: +25%) |
 | **Gemma 4 E2B** | 93% of E4B's AUROC at 55% of the GPU time | 0.35 s per judgement on one RTX 3090 |
-[[QWEN_README_ROW]]
+| **Control: Qwen3-4B**, same prompts | holistic 0.663 · jury 0.637 | the effect is not model-specific; Gemma 4 E4B gives the strongest jury (+29% vs +14% budget gain) |
 
 All numbers are on **600 held-out runs from repositories never seen during development**, with 95% repository-cluster
 bootstrap intervals (2,000 resamples) and Holm correction over the 8 confirmatory tests.

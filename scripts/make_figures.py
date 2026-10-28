@@ -167,7 +167,8 @@ def fig_agreement():
         ax.axhline(t, color=GRID, ls=':', lw=1)
         ax.text(5.45, t + 0.01, lab, fontsize=7.5, color=INK2, ha='right')
     ax.set_title('Agreement with a blind reference annotation (80 test items)', loc='left')
-    ax.legend(fontsize=8, loc='upper right', bbox_to_anchor=(1, 1.02))
+    ax.set_ylim(-0.1, 1.0)
+    ax.legend(fontsize=8, loc='upper center', bbox_to_anchor=(0.5, 1.0), ncol=3)
     r = a[a.model == 'e4b'].set_index('dim').loc[DIMS]
     x = np.arange(len(DIMS))
     ax2.bar(x - 0.2, r.mean_ref, 0.38, color=C['base'], label='reference annotator', edgecolor=SURF, lw=2)

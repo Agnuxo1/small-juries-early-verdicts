@@ -15,14 +15,14 @@ at 20 steps was inconclusive (38 positives). In a budget simulation, aborting ru
 threshold chosen on development data resolves **+29% more tasks per agent step** [+14, +45] (Holm p ≤ 0.004), +19 points more
 than the same policy driven by trace features; it matches the best step cap tuned on development data while deciding ten
 steps earlier, and combined with that cap it reaches **+36%** [+19, +54]. The 2B-effective E2B keeps 93% of the AUROC at 55%
-of the GPU time. [[QWEN_ABSTRACT]] We release code, prompts, all verdicts and a blind validation of the rubric.
+of the GPU time. A Qwen3-4B control with identical prompts shows the effect is not Gemma-specific, and Gemma 4 E4B gives the strongest jury. We release code, prompts, all verdicts and a blind validation of the rubric.
 
 ## 1. Introduction
 
-The Gemma 4 Developer Agent setting is deliberately austere: a few open models, one fixed time budget, no internet. Under a
-fixed budget every step spent on a doomed attempt is a step not spent on a promising one, and doomed attempts are the
-majority: 83% of the 80,036 public SWE-agent runs we study are unresolved, and unresolved runs are longer. Execution-based verification (running the tests) answers "did it
-work?" only at the end, and requires a working environment per repository.
+The Gemma 4 Developer Agent setting is austere: small open models, a fixed time budget, no internet. Every step spent on a
+doomed attempt is a step not spent on a promising one, and doomed attempts dominate: 83% of the 80,036 public SWE-agent runs
+we study are unresolved, and unresolved runs are longer. Running the tests answers "did it work?" only at the end, and needs
+a working environment per repository.
 
 We study the earlier and cheaper question: **after a handful of steps, is this run worth continuing?** Our contributions:
 
@@ -36,14 +36,13 @@ We study the earlier and cheaper question: **after a handful of steps, is this r
    holistic probabilities are not (ECE 0.17–0.28).
 3. **A budget policy with a measured payoff.** Jury-guided early abort increases resolved tasks per agent step by 29% on
    held-out runs, beats a trace-feature policy, and composes with a tuned step cap (+36%).
-4. **A pre-registered, fully reported study.** Four hypotheses fixed before any judge was run; supported, unsupported and
-   negative results are reported side by side, with all verdicts released.
+4. **A pre-registered study.** Four hypotheses fixed before any judge was run; supported and unsupported results are
+   reported side by side, with all verdicts released.
 
 ## 2. Related work
 
-**Benchmarks and agents.** SWE-bench [1] and agent scaffolds such as SWE-agent [2] and OpenHands [3] define the task;
-SWE-Gym [4] and R2E-Gym [5] provide training environments, and SWE-RL [6] post-trains with reinforcement learning. Studies of
-"solved" issues [7] remind us that test-based labels are imperfect, a caveat that also applies to our outcome labels.
+**Benchmarks and agents.** SWE-bench [1], SWE-agent [2] and OpenHands [3] define the task; SWE-Gym [4] and R2E-Gym [5]
+provide training environments and SWE-RL [6] post-trains with RL. Test-based labels are imperfect [7].
 
 **Verifiers and judges for code agents.** SWE-Gym and R2E-Gym train verifiers over *finished* trajectories; SWE-RM [8] is an
 execution-free reward model (30B MoE) for test-time scaling and RL; Dockerless [9] verifies *final patches* agentically
@@ -53,9 +52,9 @@ score intermediate reasoning steps [21]; we bring early verdicts to multi-step *
 to share the accelerator with the agent.
 
 **LLM-as-a-judge and juries.** LLM judges [11] and Agent-as-a-Judge [12] are widely used; Verga et al. [13] replace one large
-judge with a panel of diverse models, and Zhu et al. [14] study which judges to call and when to stop. Our "jury" is
-different in kind: a single small model scoring several *task-specific dimensions*, with a learned aggregation, inspired by
-multi-criterion rubric tribunals (BenchClaw, conceptual design only; no code reused). Calibration follows Guo et al. [15].
+judge with a panel of models, and Zhu et al. [14] study which judges to call and when to stop. Our "jury" is one small model
+scoring several *task-specific dimensions* with a learned aggregation, inspired by multi-criterion rubric tribunals
+(BenchClaw; conceptual design only, no code reused). Calibration follows Guo et al. [15].
 
 ## 3. Method
 
@@ -92,8 +91,8 @@ rejected edits, test outcomes, files opened); logistic regression or gradient bo
 
 **Early-abort policy.** At step k the agent aborts if 1 − P(success) > τ; τ is chosen on development out-of-fold
 predictions. Efficiency is resolved tasks per agent step, an aborted run costing k steps and resolving nothing; we report
-the relative gain over never aborting on all 600 test runs (runs shorter than k are never aborted). A fixed cap at k steps is
-a second control.
+the relative gain over never aborting on all 600 test runs (runs shorter than k are never aborted). Controls: the same policy
+on trace features, step caps chosen on development data, and an issue-only judge that sees no agent step.
 
 **Statistics.** AUROC, ECE (10 bins) and Brier with 95% CIs from 2,000 repository-cluster bootstrap resamples, paired for
 differences; two-sided bootstrap p-values; Holm correction over the 8 confirmatory contrasts (H1, H2a, H2b, H4 at k = 10
@@ -113,7 +112,7 @@ and 20). Nothing was tuned on the test split.
 | **Gemma 4 E4B jury** | **0.677 [0.619, 0.734]** | 0.648 [0.555, 0.744] |
 | E4B jury + trace features | 0.671 [0.612, 0.728] | 0.669 [0.573, 0.761] |
 | E4B holistic + trace features | 0.652 [0.589, 0.715] | 0.712 [0.617, 0.805] |
-[[QWEN_TABLE_ROW]]
+| Qwen3-4B holistic / jury (control) | 0.663 / 0.637 | 0.639 / 0.655 |
 
 (CIs from `results/metrics_preregistered.csv`.) At k = 10 the E4B jury beats the no-LLM control by **+0.102**
 [+0.034, +0.170] (Holm p = 0.020), and stacking it with trace features beats the control by +0.096 [+0.041, +0.151]
@@ -124,7 +123,7 @@ pre-registration. The rubric does not discriminate better than asking the same m
 [+0.011, +0.142]). The rubric's value is interpretability and calibration (Sections 4.2, 4.5), not extra ranking power.
 
 *Run or issue?* Some issues are harder than others, so part of any early signal can come from the issue text alone.
-An ablation in which E4B sees the same issue but no agent step reaches only AUROC 0.533 [0.484, 0.581] (holistic) and 0.535 (jury); reading the first ten steps adds **+0.142** [+0.068, +0.219] (p = 0.001). Among the 52 issues with both a resolved and a failed judged run, the jury ranks the resolved run higher 54% of the time [40, 67], too few pairs to conclude. The early signal comes from what the agent does, not from issue difficulty alone.
+An ablation in which E4B sees the same issue but no agent step reaches only AUROC 0.533 [0.482, 0.582] (holistic) and 0.535 (jury); reading the first ten steps adds **+0.142** [+0.063, +0.218] (p = 0.001). Among the 52 issues with both a resolved and a failed judged run, the jury ranks the resolved run higher 54% of the time [40, 67], too few pairs to conclude. The early signal comes from what the agent does, not from issue difficulty alone.
 
 *Why absolute prefixes matter.* With fractional prefixes, trace features reach AUROC 0.720 at 66% of the run, because the
 number of steps in "66% of the run" encodes the total length, which is strongly associated with failure; there the jury adds
@@ -137,7 +136,7 @@ the honest setting, and the one where the LLM judge helps.
 
 Raw holistic probabilities from a small model are badly calibrated (E4B ECE 0.185 at k = 10; E2B 0.250): they cluster on
 round values and overestimate success. The jury's logistic layer, fitted only on development repositories, gives
-**ECE 0.023** [0.020, 0.069] on the test repositories (Brier 0.178, calibration slope 1.12). That is at the noise floor of
+**ECE 0.023** [0.019, 0.070] on the test repositories (Brier 0.178, calibration slope 1.12). That is at the noise floor of
 this sample size (a perfectly calibrated predictor scores a median ECE of 0.032 here). Re-weighted to the full dataset's
 16.7% success rate, ECE rises to 0.072, so the layer should be refitted when the base rate changes. Platt scaling of the
 holistic score also calibrates (ECE 0.079 at k = 10); the jury adds a per-dimension explanation.
@@ -149,7 +148,9 @@ holistic score also calibrates (ECE 0.079 at k = 10); the jury adds a per-dimens
 E2B keeps 93% of E4B's jury AUROC at k = 10 (ratio CI [0.86, 1.00]) and 101% at k = 20, at 55–59% of the GPU time
 (batched throughput: 0.35 s vs 0.64 s per judged run on one RTX 3090). Both models read identical prompts, so token cost is
 the same and the pre-registered "less than half the cost" criterion fails narrowly: **H3 is rejected as stated**. Either
-model costs a fraction of a GPU-second per judgement. [[QWEN_PARAGRAPH]]
+model costs a fraction of a GPU-second per judgement.
+
+*Model-family control.* Qwen3-4B-Instruct-2507 with byte-identical prompts behaves as a peer: its holistic judge (0.663) matches Gemma 4 E4B's (0.655) and also beats trace features (+0.088 [+0.014, +0.161]), so the effect is not Gemma-specific. With the rubric, Gemma 4 E4B is the strongest of the three small judges (0.677 vs 0.637; +0.040 [−0.001, +0.081]), and only its jury makes early abort clearly profitable at step 10 (Qwen3-4B +14% [−2, +31], E2B +17%, E4B +29%).
 
 ### 4.4 Early abort under a fixed budget (H4)
 
@@ -169,7 +170,7 @@ the 429 judged runs: they would have succeeded 18% of the time, against 38% for 
 eventual successes but saves 6,251 of 14,328 agent steps (44%), the trade a fixed budget rewards. A step cap is a strong
 baseline in this data, because runs still going after 20 steps rarely succeed: the jury at step 10 matches the best cap
 (+4 points [−9, +18]) while deciding ten steps earlier, and the two compose (jury + cap minus jury alone: +7 points
-[+1.5, +13]). At step 20 the jury adds nothing over the cap (+1.7 [−3.7, +7.8]): **its value is in deciding early**.
+[+1.5, +13]). At step 20 the jury adds nothing over the cap (+1.7 [−3.7, +7.9]): **its value is in deciding early**.
 
 *Robustness.* Charging one agent step per judgement: +23% [+8, +39]. Thresholds within ±0.10 of the chosen τ: +20% to +29%.
 Re-weighting the test runs to the dataset's 16.7% success rate: jury +35%, cap +29%, combined +42%. The simulation measures
@@ -182,22 +183,21 @@ resolved issues per step under an open stream of issues; with a fixed issue list
 We re-rated 80 random test prompts (k = 10) blind to outcomes and to Gemma's scores; four Claude Sonnet sub-agents each
 rated 20 items with the identical rubric (one LLM reference rating per item, not human experts). E4B agrees substantially on
 **localization (κw 0.65)** and **loop (0.63)**, moderately on reproduction (0.49) and test evidence (0.45), and poorly on
-scope (0.22) and coherence (0.13); its mean score correlates with the reference at ρ = 0.73 [0.60, 0.83]. The small judges
+scope (0.22) and coherence (0.13); its mean score correlates with the reference at ρ = 0.73 [0.60, 0.83]. Qwen3-4B matches it on localization and reproduction but not on loop (κw 0.16), the dimension that carries most of E4B's signal. The small judges
 are lenient (coherence 4.6 vs 2.7 on average), which is consistent with the weak dimensions. On these 80 items (easier
 than average: the jury reaches 0.77 here vs 0.68 on all 429) the reference's mean rating reaches AUROC 0.83 against 0.73
-for the jury's mean rating (+0.10 [0.00, +0.20]) and 0.77 for the calibrated jury (+0.06 [−0.03, +0.15]): a stronger judge
+for the jury's mean rating (+0.10 [0.00, +0.19]) and 0.77 for the calibrated jury (+0.06 [−0.02, +0.14]): a stronger judge
 may help, and the calibrated 4B jury is already close.
 
 ## 5. Discussion
 
-**How to use it.** In a budgeted harness (e.g. 12 h on 4×L4 with Gemma 4 as the agent), the jury runs on the same server
-with the same weights: one extra prompt at step 10 per attempt, plus a step cap. Aborted attempts free budget for retries or
-the next issue; τ and the cap are two numbers tuned on development runs. The dimension scores give a readable reason ("stuck
-in a loop", "has not found the code") for inspecting failed runs or filtering trajectories for SFT/RL.
+**How to use it.** In a budgeted harness (e.g. 12 h on 4×L4 with Gemma 4 as the agent), the jury shares the server and
+weights: one extra prompt at step 10 per attempt, plus a step cap; τ and the cap are tuned on development runs. The dimension
+scores give a readable reason ("stuck in a loop", "has not found the code") for inspecting runs or filtering SFT/RL data.
 
-**What generalizes.** The method needs only a log and a rubric: no environment, no tests, no final patch. It applies to any
-agent loop with budgets (test-time scaling, best-of-n, truncatable RL rollouts). The prefix-leakage finding applies to anyone
-evaluating online monitors.
+**What generalizes.** The method needs only a log and a rubric: no environment, tests or final patch. It applies to any
+budgeted agent loop (test-time scaling, best-of-n, truncatable RL rollouts); the prefix-leakage finding applies to any
+online monitor.
 
 **Limitations.** (i) All trajectories come from one scaffold (SWE-agent) driven by Llama-3.1 models; transfer to the Gemma 4
 competition harness is not measured here. (ii) H4 is a simulation on recorded runs. (iii) The k = 20 analysis is

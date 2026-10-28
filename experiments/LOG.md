@@ -47,13 +47,13 @@ has a resolved and an unresolved run). Outputs quarantined; every later file is 
 | H1, E4B jury > baseline at k = 20 | Δ +0.021 [−0.090, +0.131] | not supported (38 positives) |
 | H1 at k = 10 (secondary) | Δ +0.102 [+0.034, +0.170], Holm p = 0.020 | supported |
 | H2a, jury > holistic (E4B) | k = 10 +0.022 [−0.021, +0.065]; k = 20 −0.049 [−0.125, +0.026] | not supported |
-| H2b, stack adds ≥ 0.02 | k = 10 +0.096 [+0.041, +0.151], Holm p = 0.006; k = 20 +0.042 [−0.029, +0.107] | supported at k = 10 |
+| H2b, stack adds ≥ 0.02 | k = 10 +0.096 [+0.041, +0.151], Holm p = 0.006; k = 20 +0.042 [−0.027, +0.109] | supported at k = 10 |
 | H3, E2B ≥ 90% of E4B at < ½ cost | AUROC ratio 0.93–1.01; GPU-time ratio 0.55–0.59 | rejected (cost leg) |
-| H4, jury abort > never abort | k = 10 +29.3% [+13.8, +45.2], Holm p = 0.004; k = 20 +26.6% [+15.0, +39.3], Holm p = 0.004 | supported |
+| H4, jury abort > never abort | k = 10 +29.3% [+13.8, +45.2], Holm p = 0.004; k = 20 +26.6% [+15.3, +39.0], Holm p = 0.004 | supported |
 
 **S1 — supplementary statistics** (`src/08_supplementary.py`, added after pre-registration). Two-sided bootstrap p-values,
 Holm over 8 confirmatory contrasts; H4 contrasts: jury vs trace-feature policy at k = 10 +19.4 points [+6.9, +32.6]
-(p = 0.002); jury vs fixed cap +46.1 points [+28.9, +62.7]; at k = 20 the jury equals the cap (+1.7 [−3.7, +7.8]).
+(p = 0.002); jury vs fixed cap +46.1 points [+28.9, +62.7]; at k = 20 the jury equals the cap (+1.7 [−3.7, +7.9]).
 
 **V1/V2 — rubric validation** (`src/09_export_validation.py`, `src/10_validation.py`). 80 random test prompts at k = 10
 (seed 20261028), rated blind by four Claude Sonnet sub-agents (20 items each) on the identical prompt. E4B quadratic-weighted
@@ -69,12 +69,12 @@ matched except four wording/rounding issues (fixed). Major points and our respon
   over a cap" headline was removed.
 - *Is the signal the run or the issue?* → within-issue pairs (52 issues with both outcomes): E4B jury ranks the resolved run
   higher 0.54 [0.40, 0.67] — inconclusive; an issue-only ablation (E4B sees the issue, no agent step) was run (E1-issue).
-- *Calibration overclaimed* → ECE CI [0.020, 0.069], slope 1.12, noise floor 0.032 (median), re-weighted ECE 0.072 reported.
+- *Calibration overclaimed* → ECE CI [0.019, 0.070], slope 1.12, noise floor 0.032 (median), re-weighted ECE 0.072 reported.
 - *H4 robustness* → judgement overhead +22.8% [+7.8, +38.5]; τ ± 0.10: +20% to +29%; re-weighted to 16.7%: +34.7%.
-- *Validation overclaimed* → one rating per item; paired AUROC reference − calibrated jury +0.06 [−0.03, +0.15].
+- *Validation overclaimed* → one rating per item; paired AUROC reference − calibrated jury +0.06 [−0.02, +0.14].
 - Prior art added: Speculative Rejection (arXiv:2410.20290), process reward models (arXiv:2305.20050).
 
-**E1-issue — issue-only ablation** (job `0a0269895a034f27`). Gemma 4 E4B, prompt v1, issue text only (log cut before the first agent action), the same 429 test and 760 dev runs as k = 10; 0 invalid JSON; 402 s on one RTX 3090. AUROC issue-only holistic 0.533 [0.484, 0.581], issue-only jury 0.535 [0.482, 0.586] vs k = 10 jury 0.677; difference +0.142 [+0.068, +0.219], p = 0.001. *Accepted:* the signal is in the run, not in issue difficulty. A first submission (`559ffb666c064898`) was cancelled by us while queued (RAM request too high) and a second (`0a0269895a034f27`) was interrupted by a server reboot before starting; the result comes from job `78abe62ed44c4df4`.
+**E1-issue — issue-only ablation** (job `0a0269895a034f27`). Gemma 4 E4B, prompt v1, issue text only (log cut before the first agent action), the same 429 test and 760 dev runs as k = 10; 0 invalid JSON; 402 s on one RTX 3090. AUROC issue-only holistic 0.533 [0.482, 0.582], issue-only jury 0.535 [0.481, 0.586] vs k = 10 jury 0.677; difference +0.142 [+0.063, +0.218], p = 0.001. *Accepted:* the signal is in the run, not in issue difficulty. A first submission (`559ffb666c064898`) was cancelled by us while queued (RAM request too high) and a second (`0a0269895a034f27`) was interrupted by a server reboot before starting; the result comes from job `78abe62ed44c4df4`.
 
 **C1 — open-model control** (job `0f4417cc04eb4aed`). Qwen3-4B-Instruct-2507 with byte-identical prompts on test and dev,
-k = 10, k = 20 and frac66. [[QWEN_LOG]]
+k = 10, k = 20 and frac66. Interrupted twice for reasons outside the study (an external SIGTERM on `0f4417cc04eb4aed`; a server reboot during queued `e4ee6a6673434997`); the resumable runner kept every finished verdict and `e4cfedc4491740ad` completed test and dev for k = 10 and 20 (plus test frac66). We cancelled its last stage (dev frac66, an upper-bound setting not used in the paper) to free the shared GPU; Qwen fractional results are therefore not reported. 0 invalid JSON. Results (k = 10): holistic 0.663 [0.610, 0.715], jury 0.637 [0.580, 0.692]; holistic − trace features +0.088 [+0.014, +0.161]; E4B jury − Qwen jury +0.040 [−0.001, +0.081] (p = 0.053); jury abort policy +13.8% [−1.7, +30.7] vs +29.3% for E4B. Agreement with the blind reference: localization κw 0.64, reproduction 0.60, loop 0.16. *Accepted:* the effect is not Gemma-specific; Gemma 4 E4B gives the strongest jury.
