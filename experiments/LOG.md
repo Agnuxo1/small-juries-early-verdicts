@@ -74,7 +74,7 @@ matched except four wording/rounding issues (fixed). Major points and our respon
 - *Validation overclaimed* → one rating per item; paired AUROC reference − calibrated jury +0.06 [−0.03, +0.15].
 - Prior art added: Speculative Rejection (arXiv:2410.20290), process reward models (arXiv:2305.20050).
 
-**E1-issue — issue-only ablation** (job `0a0269895a034f27`). [[ISSUE_LOG]]
+**E1-issue — issue-only ablation** (job `0a0269895a034f27`). Gemma 4 E4B, prompt v1, issue text only (log cut before the first agent action), the same 429 test and 760 dev runs as k = 10; 0 invalid JSON; 402 s on one RTX 3090. AUROC issue-only holistic 0.533 [0.484, 0.581], issue-only jury 0.535 [0.482, 0.586] vs k = 10 jury 0.677; difference +0.142 [+0.068, +0.219], p = 0.001. *Accepted:* the signal is in the run, not in issue difficulty. A first submission (`559ffb666c064898`) was cancelled by us while queued (RAM request too high) and a second (`0a0269895a034f27`) was interrupted by a server reboot before starting; the result comes from job `78abe62ed44c4df4`.
 
 **C1 — open-model control** (job `0f4417cc04eb4aed`). Qwen3-4B-Instruct-2507 with byte-identical prompts on test and dev,
 k = 10, k = 20 and frac66. [[QWEN_LOG]]

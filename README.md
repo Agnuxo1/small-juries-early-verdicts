@@ -36,6 +36,7 @@ to the final patch — just the log so far.
 | | First 10 steps | What it means |
 |---|---|---|
 | **AUROC, Gemma 4 E4B jury** | **0.677** [0.619, 0.734] | vs. **0.575** for 43 hand-built trace features (Δ +0.10, Holm p = 0.02) |
+| **Signal is in the run** | issue only: 0.53 → +10 steps: 0.68 | reading the agent's first steps adds +0.14 AUROC [+0.07, +0.22] |
 | **Calibration (ECE)** | **0.023** | raw "give me a probability" answers from the same model: 0.185 |
 | **Early-abort policy** | **+29%** resolved tasks per agent step [+14, +45] | vs. never aborting (Holm p = 0.004) |
 | vs. trace-feature policy | **+19 points** [+7, +33] | same policy, no LLM |

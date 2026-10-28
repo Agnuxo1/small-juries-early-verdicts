@@ -124,7 +124,7 @@ pre-registration. The rubric does not discriminate better than asking the same m
 [+0.011, +0.142]). The rubric's value is interpretability and calibration (Sections 4.2, 4.5), not extra ranking power.
 
 *Run or issue?* Some issues are harder than others, so part of any early signal can come from the issue text alone.
-[[ISSUE_PARAGRAPH]]
+An ablation in which E4B sees the same issue but no agent step reaches only AUROC 0.533 [0.484, 0.581] (holistic) and 0.535 (jury); reading the first ten steps adds **+0.142** [+0.068, +0.219] (p = 0.001). Among the 52 issues with both a resolved and a failed judged run, the jury ranks the resolved run higher 54% of the time [40, 67], too few pairs to conclude. The early signal comes from what the agent does, not from issue difficulty alone.
 
 *Why absolute prefixes matter.* With fractional prefixes, trace features reach AUROC 0.720 at 66% of the run, because the
 number of steps in "66% of the run" encodes the total length, which is strongly associated with failure; there the jury adds

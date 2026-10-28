@@ -274,14 +274,20 @@ def gif_race():
     jp = allr.uid.map(d.jury_p).fillna(1.0).values      # runs with <=10 steps are never judged/aborted
     bp = allr.uid.map(d.base_p).fillna(1.0).values
     n, y = allr.n_ai_total.values, allr.target.values
-    lanes = {'never abort': (np.zeros(len(n), bool), '#b5b4ad'),
-             'trace-feature abort': ((1 - bp) > g['base'].tau, C['base']),
-             'Gemma 4 E4B jury abort': ((1 - jp) > g['jury'].tau, C['e4b'])}
+    rob = json.load(open(f'{RES}/robustness.json'))['A_B_budget_e4b']
+    cap, (tj2, cp2) = rob['cap_dev'], rob['combined_dev']
+    nocap = 10 ** 9
+    lanes = {'never abort': (np.zeros(len(n), bool), nocap, '#b5b4ad'),
+             'trace-feature abort at step 10': ((1 - bp) > g['base'].tau, nocap, C['base']),
+             f'step cap at {cap} (tuned on dev)': (np.zeros(len(n), bool), cap, C['cap']),
+             'Gemma 4 E4B jury abort at step 10': ((1 - jp) > g['jury'].tau, nocap, C['e4b']),
+             f'jury at step 10 + cap at {cp2}': ((1 - jp) > tj2, cp2, '#123f78')}
     BUD = 6000
     series = {}
-    for k, (ab, col) in lanes.items():
-        steps = np.where(ab, 10, n)
-        solved = np.where(ab, 0, y)
+    for k, (ab, cp, col) in lanes.items():
+        capped = (~ab) & (n > cp)
+        steps = np.where(ab, 10, np.where(capped, cp, n))
+        solved = np.where(ab | capped, 0, y)
         cs, cy = np.cumsum(steps), np.cumsum(solved)
         xs = np.linspace(0, BUD, 121)
         series[k] = (xs, np.array([cy[cs <= x][-1] if (cs <= x).any() else 0 for x in xs]), col)
@@ -296,10 +302,16 @@ def gif_race():
     ax.grid()
     fig.tight_layout()
 
+    gap = ax.get_ylim()[1] * 0.045
+
     def up(i):
-        for k, (xs, ys, _) in series.items():
+        prev = -1e9
+        for k in sorted(series, key=lambda q: series[q][1][i]):
+            xs, ys, _ = series[k]
             lines[k].set_data(xs[:i + 1], ys[:i + 1])
-            lbl[k].set_position((xs[i] + 60, ys[i]))
+            yl = max(ys[i], prev + gap)          # keep end labels from overlapping
+            prev = yl
+            lbl[k].set_position((xs[i] + 60, yl))
             lbl[k].set_text(str(int(ys[i])))
         return list(lines.values()) + list(lbl.values())
     FuncAnimation(fig, up, frames=list(range(121)) + [120] * 12, blit=False).save(f'{FIG}/anim_budget_race.gif', writer=PillowWriter(fps=12))
